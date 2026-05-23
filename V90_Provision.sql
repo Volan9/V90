@@ -8889,7 +8889,7 @@ GO
 	EXEC [SVC].[Provision];
 	EXEC [AUT].[AddSampleData];
 
-	EXEC [SVC].[Provision] 'V91';
+	EXEC [SVC].[Provision] 'V90.02';
 
 	/*#*---------- 🧪 VALIDATION ----------*#*/
 	SELECT *
@@ -9732,7 +9732,7 @@ BEGIN
     /*#*========== 🎯 PURPOSE ==========*#*/
 	DECLARE @_DB VARCHAR(50), @_DateString VARCHAR(50), @_Folder  VARCHAR(100), @_File VARCHAR(200), @_SQLT VARCHAR(500), @_SQL VARCHAR(500);     
 	SET @_SQLT = 'BACKUP DATABASE #DB# TO DISK = ''#FOLDER#\#DB#_#DATE#.bak'' WITH INIT, COMPRESSION, CHECKSUM, STATS = 10;'
-    SET @_Folder = N'C:\zVIN\_V9\DB';
+    SET @_Folder = N'C:\VIN\_V9\DB';
     SET  @_DateString = CONVERT(CHAR(8), GETDATE(), 112); -- e.g. _20251216
     SET @_File = @_Folder + '' + @_DateString;
     
@@ -10980,6 +10980,59 @@ END
 /*#*==================== 🔚 ====================*#*/
 GO
 
+/****** Object:  StoredProcedure [dbo].[Help]    Script Date: 23/05/2026 4:19:30 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+/*
+	/*#*---------- 🔍 EXAMPLE ----------*#*/	
+	EXEC [SVC].[FindX] 'AUT%', 'Proc';
+
+
+	/*#*---------- 🧪 VALIDATION ----------*#*/
+	EXEC [dbo].[Help];
+
+
+*/
+CREATE PROC [dbo].[Help]
+	@Controller varchar(500) = NULL /*_*{Parameter},{@Controller},{Orignal job or schedueler}*_*/    
+AS
+BEGIN
+	SET NOCOUNT ON;
+	/*#*========== 🎯 PURPOSE ==========*#*/
+	
+	/*#*---------- 📄 PARAMETER ----------*#*/
+	
+	/*#*========== 🧩 PREPARE ==========*#*/
+	WITH cteData AS (
+		SELECT CONVERT(VARCHAR(50), 'Concept') AS [Source]
+		, o.[Category] AS [Category]
+		,CONCAT_WS(' - ', o.[ConceptCode], o.[ConceptName]) AS [Content]
+		, o.ConceptDesc AS [Description]
+		FROM [SVC].[Dev_Concept] AS o
+		UNION 
+		SELECT CONVERT(VARCHAR(50), 'Convention') AS [Source]
+		, o.[Category] AS [Category]		
+		, o.[Content] AS [Content]
+		, o.[Desc] AS [Description]
+		FROM [SVC].[Dev_Convention] AS o
+	)
+	/*#*========== ✅ ACTION ==========*#*/
+	SELECT o.[Category]
+		,o.[Content]
+		,o.[Description]
+		,o.[Source]
+	FROM cteData AS o
+	ORDER BY o.[Source], o.[Content]
+
+END
+/*#*==================== 🔚 ====================*#*/
+GO
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
 /*#*########## 📚 Template App ##########*#*/
